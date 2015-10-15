@@ -1,12 +1,3 @@
-/**
- * Module Description
- * 
- * Version    Date            Author           Remarks
- * 1.00       26 Jan 2015     Chris
- *
- */
-
-
 function deferedRevenue(request, response){	// initial function called as default function in script
 	
 	if(request.getMethod() == 'GET'){	// as script is run
@@ -33,36 +24,34 @@ function function2(){
 	
 	var setStartDate 	= new Date(request.getParameter('date_start'));
 	var setEndDate 		= new Date(request.getParameter('date_end'));
-	logx('timeout check', 'Before first search');
-	var results 		= search114();										// Search Account 114
-	var poNumbers 		= getPoNumber(results);								// Sort results for Created From field
-	var poID 			= getPoId(results);									// Sort results for Internal ID
-	logx('timeout check', 'Before second search');
-	var resultsqty 		= search231(poNumbers);								// Search account 321 based on associated invoices
-	var w 				= window;
+	var results 		= search114();						// Search Account 114
+	var poNumbers 		= getPoNumber(results);					// Sort results for Created From field
+	var poID 		= getPoId(results);					// Sort results for Internal ID
+	var resultsqty 		= search231(poNumbers);					// Search account 321 based on associated invoices
+	var w 			= window;
 	
 	logx('timeout check', 'Create Arrays');
 	for(var i = 0; i < poNumbers.entity.length; i++){						// Set arrays to be used as data storage
 		
-		w["ReceiptTotal" + poNumbers.entity[i]] 	= Number(0);	
+		w["ReceiptTotal" + poNumbers.entity[i]] = Number(0);	
 		w["ReceiptQty" + poNumbers.entity[i]]	= Number(0);
 		w["billTotal" + poNumbers.entity[i]] 	= Number(0);	
-		w["billQty" + poNumbers.entity[i]] 		= Number(0);
-		w["balance" + poNumbers.entity[i]] 		= Number(0);
-		w["bLineId" + poNumbers.entity[i]] 		= new Array();
+		w["billQty" + poNumbers.entity[i]] 	= Number(0);
+		w["balance" + poNumbers.entity[i]] 	= Number(0);
+		w["bLineId" + poNumbers.entity[i]] 	= new Array();
 		w["bLineName" + poNumbers.entity[i]] 	= new Array();
 		w["bLineAmt" + poNumbers.entity[i]] 	= new Array();
 		w["bLineRate" + poNumbers.entity[i]] 	= new Array();
-		w["rLineId" + poNumbers.entity[i]] 		= new Array();
+		w["rLineId" + poNumbers.entity[i]] 	= new Array();
 		w["rLineName" + poNumbers.entity[i]] 	= new Array();
 		w["rLineAmt" + poNumbers.entity[i]] 	= new Array();
 		w["rLineRate" + poNumbers.entity[i]] 	= new Array();
-		w["poItems" + poNumbers.entity[i]] 		= new Array();
-		w["poAmt" + poNumbers.entity[i]] 		= new Array();
-		w["poQty" + poNumbers.entity[i]] 		= Number(0);
-		w["poTotal" + poNumbers.entity[i]] 		= Number(0);
-		w["poRate" + poNumbers.entity[i]] 		= new Array();
-		w["poDate" + poNumbers.entity[i]] 		= null;
+		w["poItems" + poNumbers.entity[i]] 	= new Array();
+		w["poAmt" + poNumbers.entity[i]] 	= new Array();
+		w["poQty" + poNumbers.entity[i]] 	= Number(0);
+		w["poTotal" + poNumbers.entity[i]] 	= Number(0);
+		w["poRate" + poNumbers.entity[i]] 	= new Array();
+		w["poDate" + poNumbers.entity[i]] 	= null;
 	}
 	
 	var allPos 			= posearch(poID);									// Get all PO's based on internal IDs from above search
@@ -271,8 +260,8 @@ function posearch(array){											// Search for all PO's
 	var setEndDate 		= new Date(request.getParameter('date_end'));
 	
 	filters[0] 	= new nlobjSearchFilter('internalid', null, 'anyof', array);
-	filters[1]  = new nlobjSearchFilter('trandate', null, 'within', setStartDate, setEndDate);
-	filters[2]  = new nlobjSearchFilter('type', null, 'is', 'PurchOrd');
+	filters[1]  	= new nlobjSearchFilter('trandate', null, 'within', setStartDate, setEndDate);
+	filters[2]  	= new nlobjSearchFilter('type', null, 'is', 'PurchOrd');
 	
 	columns[0] 	= new nlobjSearchColumn('amount');
 	columns[1] 	= new nlobjSearchColumn('trandate');
@@ -284,11 +273,11 @@ function posearch(array){											// Search for all PO's
 	columns[7]	= new nlobjSearchColumn('type');
 	columns[8]	= new nlobjSearchColumn('quantity');
 	columns[9] 	= new nlobjSearchColumn('itemid','item');
-	columns[10] = new nlobjSearchColumn('rate');
+	columns[10] 	= new nlobjSearchColumn('rate');
 	
-	var results		= nlapiSearchRecord('transaction', null, filters, columns);
+	var results	= nlapiSearchRecord('transaction', null, filters, columns);
 	var allResults 	= new Array();
-	allResults 		= allResults.concat(results);
+	allResults 	= allResults.concat(results);
 	
 	while(results.length == 1000){
 		
@@ -297,11 +286,10 @@ function posearch(array){											// Search for all PO's
 		var results = nlapiSearchRecord('transaction', null, filters, columns);
 		allResults 	= allResults.concat(results);
 	}
-		
 	return allResults;
 }
 
-function search114(){						// Search for all items in account 2408 (114)
+function search114(){		// Search for all items in account 2408 (114)
 	
 	
 	var filters 		= new Array();
@@ -344,16 +332,15 @@ function search114(){						// Search for all items in account 2408 (114)
 	return allResults;
 }
 
-function search231(array){							// Search for all items in account 1405 (231)
+function search231(array){		// Search for all items in account 1405 (231)
 	
-	
-	var filters			= new Array();
+	var filters		= new Array();
 	var columns 		= new Array();
 	var setStartDate 	= new Date(request.getParameter('date_start'));
 	var setEndDate 		= new Date(request.getParameter('date_end'));
 	
 	filters[0] 	= new nlobjSearchFilter('account', null, 'anyof', ['225', '231', '230', '233', '232', '227', '226', '229', '228', '398', '425', '139']);
-	filters[1]  = new nlobjSearchFilter('createdfrom', null, 'anyof', array);
+	filters[1	= new nlobjSearchFilter('createdfrom', null, 'anyof', array);
 	filters[2]	= new nlobjSearchFilter('quantity', null, 'isnotempty');
 	filters[3]	= new nlobjSearchFilter('type', null, 'is', 'ItemRcpt');
 	
@@ -367,121 +354,22 @@ function search231(array){							// Search for all items in account 1405 (231)
 	columns[7]	= new nlobjSearchColumn('type');
 	columns[8]	= new nlobjSearchColumn('quantity');
 	columns[9] 	= new nlobjSearchColumn('itemid','item');
-	columns[10] = new nlobjSearchColumn('rate');
+	columns[10] 	= new nlobjSearchColumn('rate');
 
 	
-	var results		= nlapiSearchRecord('transaction', null, filters, columns);
+	var results	= nlapiSearchRecord('transaction', null, filters, columns);
 	var allResults 	= new Array();
-	allResults 		= allResults.concat(results);
+	allResults 	= allResults.concat(results);
 	logx('timeout check', 'Search 2 preloop ' + allResults.length);
 	
 	while(results.length == 1000){
 		
 		var lastId 	= results[999].getValue('internalid');
 		filters[4]	= new nlobjSearchFilter('internalidNumber', null, 'greaterthanorequalto', lastId);
-		var results = nlapiSearchRecord('transaction', null, filters, columns);
+		var results 	= nlapiSearchRecord('transaction', null, filters, columns);
 		allResults 	= allResults.concat(results);
 		logx('timeout check', 'Search 2 loop ' + allResults.length);
 	}
 	logx('timeout check', 'Search 2 finish ' + allResults.length);
 	return allResults;
-}
-
-function getPoNumber(array){							// Get PO "Created From", and "Internal ID";
-	
-	var poUnsorted 		= new Array();
-	var poUnsorted2 	= new Array();
-	
-	for(var x = 0; x < array.length; x++){
-		
-		poUnsorted 		= poUnsorted.concat(array[x].getText('createdfrom'));
-		poUnsorted2 	= poUnsorted2.concat(array[x].getValue('createdfrom'));
-	}
-	
-	var poSorted 		= new Array();
-	poSorted 			= trim(poUnsorted);
-	
-	var poSorted2 		= new Array();
-	poSorted2 			= trim(poUnsorted2);
-	
-	return{
-		entity: poSorted,
-		id: poSorted2,
-	};
-}
-
-function getPoId(array){							// Get array of created from
-	
-	var poUnsorted 	= new Array();
-	
-	for(var x = 0; x < array.length; x++){
-		
-		poUnsorted 	= poUnsorted.concat(array[x].getValue('createdfrom'));
-	}
-	
-	var poSorted 	= new Array();
-	poSorted 		= trim(poUnsorted);
-	return poSorted;
-}
-
-function splitResults(array){
-	
-	var bill 		= new Array();
-	var Receipt		= new Array();
-	var journal 	= new Array();
-	
-	for(var x = 0; x < array.length; x++){
-		
-		if(array[x].getValue('type') == 'VendBill'){
-			
-			bill 	= bill.concat(array[x]);
-		}
-		else if(array[x].getValue('type') == 'ItemRcpt'){
-			
-			Receipt 	= Receipt.concat(array[x]);
-		}
-		else if(array[x].getValue('type') == 'Journal'){
-			
-			journal = journal.concat(array[x]);
-		}
-	}
-	
-	return{
-		bill: bill,
-		Receipt: Receipt,
-		journal: journal
-	};
-}
-
-
-function trim(arr){									// Loop through an array and remove repeated data
-
-	var i,
-	len=arr.length,
-	out=[],
-	obj={};
-
-	for (i=0;i<len;i++) 
-	{
-		obj[arr[i]]=0;
-	}
-	for (i in obj) 
-	{
-		out.push(i);
-	}
-	
-	return out;
-}
-
-function logx(name, value){	
-	var context        = nlapiGetContext();
-	var usageRemaining = context.getRemainingUsage();
-	nlapiLogExecution ('DEBUG', name + ' | ' + usageRemaining, value);
-}
-
-function numberWithCommas(x){
-	
-    var parts = x.toString().split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return parts.join(".");
 }
